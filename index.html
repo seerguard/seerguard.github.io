@@ -8,20 +8,25 @@
       name="description"
       content="SeerGuard: A Safety Framework for Mobile GUI Agents via World Model Prediction."
     />
-    <link rel="stylesheet" href="styles.css?v=6" />
+    <link rel="stylesheet" href="styles.css?v=7" />
   </head>
   <body>
     <main class="page">
       <header class="paper-header">
         <h1>
-          <span>SeerGuard: A Safety Framework for Mobile GUI Agents</span>
+          <span>SeerGuard: A Safety Framework</span>
+          <span>for Mobile GUI Agents</span>
           <span>via World Model Prediction</span>
         </h1>
         <p class="authors">Anonymous Author(s)</p>
         <p class="venue">Conference submission under review</p>
         <nav class="link-bar" aria-label="Project links">
           <a href="#" aria-disabled="true">
-            <span class="link-icon arxiv-icon" aria-hidden="true">X</span>
+            <svg class="link-icon arxiv-logo" aria-hidden="true" viewBox="0 0 32 32">
+              <path d="M8.2 5.5 15.8 16 8.2 26.5" />
+              <path d="M23.8 5.5 16.2 16l7.6 10.5" />
+              <path d="M10.8 16h10.4" />
+            </svg>
             <span>arXiv</span>
           </a>
           <a href="#" aria-disabled="true">
@@ -38,11 +43,39 @@
             <span>Hugging Face</span>
           </a>
           <a href="#" aria-disabled="true">
-            <span class="link-icon modelscope-icon" aria-hidden="true">M</span>
+            <svg class="link-icon modelscope-logo" aria-hidden="true" viewBox="0 0 32 32">
+              <rect x="5" y="7" width="22" height="18" rx="5" />
+              <path d="M10 20V12l6 5 6-5v8" />
+              <path d="M10 12h4l2 5 2-5h4" />
+            </svg>
             <span>ModelScope</span>
           </a>
         </nav>
       </header>
+
+      <section class="result-spotlight" aria-label="Key SeerGuard results">
+        <article class="spotlight-card primary">
+          <span class="metric-label">Qwen3-VL Safety-Utility</span>
+          <strong>0.191 → 0.596</strong>
+          <span class="metric-delta positive">+212% safety-utility score on MobileSafetyBench</span>
+        </article>
+        <article class="spotlight-card">
+          <span class="metric-label">Qwen3-VL Risk-Cost</span>
+          <strong>0.347 → 0.130</strong>
+          <span class="metric-delta negative">-62.5% risk-cost score on MobileSafetyBench</span>
+        </article>
+        <article class="spotlight-card">
+          <span class="metric-label">Action Risk Assessment</span>
+          <strong>0.723 F1</strong>
+          <!-- <span class="metric-subvalue">0.361 Step Score</span> -->
+          <span class="metric-delta">Best F1 and Step Score on MobileRisk</span>
+        </article>
+        <article class="spotlight-card">
+          <span class="metric-label">Next-State Prediction</span>
+          <strong>0.762 Acc</strong>
+          <span class="metric-delta">Better Acc than GPT-5.1 on Next-State QA</span>
+        </article>
+      </section>
 
       <section id="abstract" class="section">
         <h2>Abstract</h2>
@@ -139,6 +172,70 @@
           larger penalty to harmful execution than to unnecessary refusal. Together, these
           metrics expose the tradeoff between risk avoidance and usable automation.
         </p>
+
+        <div class="leaderboard-block">
+          <div class="leaderboard-heading">
+            <p class="leaderboard-kicker">GUI Agent Safety Leaderboard</p>
+            <h3>Best tradeoffs on MobileSafetyBench</h3>
+            <p>
+              Ranking is organized around high safety-utility and low risk-cost at the
+              representative setting omega = 0.8 and alpha = 0.8. The highlighted rows show
+              guarded agents, where SeerGuard consistently shifts models toward safer behavior.
+            </p>
+          </div>
+          <div class="leaderboard">
+            <div class="leaderboard-row head">
+              <span>Rank</span>
+              <span>Agent</span>
+              <span>SUS ↑</span>
+              <span>RCS ↓</span>
+              <span>Safety Shift</span>
+            </div>
+            <div class="leaderboard-row winner">
+              <span class="rank">1</span>
+              <span class="agent-name">Gemini-3.1 + SeerGuard</span>
+              <span><strong>0.773</strong></span>
+              <span>0.180</span>
+              <span class="shift">SUS +33.0%, RCS -51.1%</span>
+            </div>
+            <div class="leaderboard-row">
+              <span class="rank">2</span>
+              <span class="agent-name">GPT-5.1 + SeerGuard</span>
+              <span>0.679</span>
+              <span>0.145</span>
+              <span class="shift">SUS +18.5%, RCS -51.8%</span>
+            </div>
+            <div class="leaderboard-row">
+              <span class="rank">3</span>
+              <span class="agent-name">Qwen3-VL + SeerGuard</span>
+              <span>0.596</span>
+              <span><strong>0.130</strong></span>
+              <span class="shift">SUS +212.0%, RCS -62.5%</span>
+            </div>
+            <div class="leaderboard-row muted-row">
+              <span class="rank">4</span>
+              <span class="agent-name">Gemini-3.1</span>
+              <span>0.581</span>
+              <span>0.368</span>
+              <span class="shift soft">Direct</span>
+            </div>
+            <div class="leaderboard-row muted-row">
+              <span class="rank">5</span>
+              <span class="agent-name">GPT-5.1</span>
+              <span>0.573</span>
+              <span>0.301</span>
+              <span class="shift soft">Direct</span>
+            </div>
+            <div class="leaderboard-row muted-row">
+              <span class="rank">6</span>
+              <span class="agent-name">Qwen3-VL</span>
+              <span>0.191</span>
+              <span>0.347</span>
+              <span class="shift soft">Direct</span>
+            </div>
+          </div>
+        </div>
+
         <figure>
           <img
             src="fig/3.png"
