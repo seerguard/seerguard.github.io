@@ -486,6 +486,11 @@ figcaption {
   opacity: 0.72;
 }
 
+.leaderboard-row.ablation-row {
+  background: linear-gradient(90deg, #fbfdff, #ffffff);
+  border-style: dashed;
+}
+
 .rank {
   display: inline-grid;
   width: 34px;
@@ -522,6 +527,11 @@ figcaption {
 .shift.soft {
   color: #637083;
   background: #eef2f7;
+}
+
+.shift.warning {
+  color: #7a4b00;
+  background: #fff4dc;
 }
 
 .table-wrap {
