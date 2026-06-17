@@ -1,0 +1,430 @@
+:root {
+  --text: #252525;
+  --muted: #666;
+  --line: #d8d8d8;
+  --soft: #f6f7f9;
+  --button: #2f5f9f;
+  --button-hover: #244a7e;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  background: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.58;
+  overflow-x: hidden;
+}
+
+.page {
+  width: calc(100% - 32px);
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 52px 0 72px;
+}
+
+.paper-header {
+  max-width: 980px;
+  margin: 0 auto 42px;
+  text-align: center;
+}
+
+h1,
+h2,
+h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  letter-spacing: 0;
+}
+
+h1 {
+  margin: 0 auto 18px;
+  font-size: clamp(34px, 5vw, 56px);
+  font-weight: 700;
+  line-height: 1.12;
+}
+
+h1 span {
+  display: block;
+}
+
+.authors {
+  margin: 0;
+  color: #333;
+  font-size: 20px;
+  text-align: center;
+}
+
+.venue {
+  margin: 4px 0 22px;
+  color: var(--muted);
+  font-size: 16px;
+  text-align: center;
+}
+
+.link-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.link-bar a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 8px 20px 8px 14px;
+  color: #fff;
+  background: #333;
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.link-bar a:hover {
+  background: #222;
+}
+
+.link-bar a[aria-disabled="true"] {
+  opacity: 0.86;
+  cursor: not-allowed;
+}
+
+.link-icon {
+  display: inline-grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  flex: 0 0 auto;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+svg.link-icon {
+  padding: 1px;
+}
+
+.arxiv-icon {
+  position: relative;
+  color: transparent;
+}
+
+.arxiv-icon::before,
+.arxiv-icon::after {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 26px;
+  background: #fff;
+  border-radius: 99px;
+}
+
+.arxiv-icon::before {
+  transform: rotate(42deg);
+}
+
+.arxiv-icon::after {
+  transform: rotate(-42deg);
+}
+
+.hf-icon {
+  font-size: 22px;
+}
+
+.modelscope-icon {
+  color: #333;
+  background: #fff;
+  border-radius: 7px;
+  font-size: 16px;
+}
+
+.section {
+  padding: 28px 0 40px;
+  border-top: 1px solid #ededed;
+}
+
+.section:first-of-type {
+  border-top: 0;
+}
+
+h2 {
+  margin: 0 0 18px;
+  font-size: clamp(28px, 3.6vw, 38px);
+  text-align: center;
+}
+
+h3 {
+  margin: 34px 0 12px;
+  font-size: 21px;
+  text-align: center;
+}
+
+p {
+  margin: 0 auto 18px;
+  max-width: 920px;
+  font-size: 17px;
+  text-align: justify;
+}
+
+figure {
+  width: 100%;
+  margin: 28px auto 6px;
+}
+
+.figure-compact {
+  max-width: 660px;
+}
+
+.figure-case {
+  max-width: 750px;
+}
+
+.figure-newcompact {
+  max-width: 520px;
+}
+
+figure img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+figcaption {
+  max-width: 960px;
+  margin: 12px auto 0;
+  color: #4f4f4f;
+  font-size: 15px;
+  line-height: 1.48;
+  text-align: center;
+}
+
+.table-block {
+  margin-top: 34px;
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin: 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #fff;
+}
+
+.narrow-table {
+  max-width: 860px;
+}
+
+.small-table {
+  max-width: 560px;
+}
+
+table {
+  width: 100%;
+  min-width: 880px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.narrow-table table {
+  min-width: 720px;
+}
+
+.small-table table {
+  min-width: 420px;
+}
+
+.bar-chart {
+  position: relative;
+  max-width: 920px;
+  margin: 28px auto 32px;
+  padding: 24px 22px 70px 44px;
+  overflow-x: auto;
+  background: #fff;
+}
+
+.chart-inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(7, 86px);
+  align-items: end;
+  gap: 24px;
+  min-width: 746px;
+  height: 360px;
+  padding: 0 4px;
+  border-bottom: 2px solid #333;
+  border-left: 2px solid #333;
+}
+
+.bar {
+  position: relative;
+  display: grid;
+  grid-template-rows: 34px 1fr 48px;
+  align-items: end;
+  height: 100%;
+  text-align: center;
+}
+
+.bar i {
+  position: relative;
+  display: block;
+  width: 54px;
+  height: calc(var(--value) * 1%);
+  margin: 0 auto;
+  background: #96cfe3;
+  border-radius: 4px 4px 0 0;
+  box-shadow: inset 0 0 0 1px rgba(30, 70, 90, 0.05);
+}
+
+.bar.accent i {
+  background: #1297c3;
+}
+
+.bar.baseline i {
+  background: #b7dce8;
+}
+
+.bar-value {
+  align-self: end;
+  color: #111;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.bar-label {
+  align-self: start;
+  display: block;
+  margin-top: 10px;
+  color: #111;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  line-height: 1.05;
+  transform: rotate(-18deg);
+  transform-origin: top right;
+  white-space: nowrap;
+}
+
+.model-badge {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  color: #2f5fce;
+  background: #fff;
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 800;
+  transform: translateX(-50%);
+}
+
+.model-badge.openai {
+  color: #222;
+  font-size: 21px;
+}
+
+.model-badge.qwen {
+  color: #6b5cff;
+}
+
+.model-badge.mw {
+  color: #222;
+  font-size: 12px;
+}
+
+.model-badge.sawm {
+  color: #0d6f92;
+}
+
+.chart-y-label {
+  position: absolute;
+  top: 172px;
+  left: 4px;
+  color: #111;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  transform: rotate(-90deg);
+}
+
+th,
+td {
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+th {
+  background: var(--soft);
+  font-weight: 700;
+}
+
+td {
+  text-align: center;
+}
+
+tbody tr:nth-child(even) {
+  background: #fbfbfc;
+}
+
+strong {
+  font-weight: 800;
+}
+
+@media (max-width: 720px) {
+  .page {
+    width: calc(100% - 22px);
+    max-width: 1060px;
+    padding-top: 34px;
+  }
+
+  h1 {
+    max-width: 100%;
+    font-size: 29px;
+    overflow-wrap: anywhere;
+  }
+
+  .authors {
+    font-size: 18px;
+  }
+
+  p {
+    font-size: 16px;
+    text-align: left;
+  }
+
+  figcaption {
+    text-align: left;
+  }
+
+  .link-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .link-bar a {
+    justify-content: center;
+    min-width: 0;
+  }
+}

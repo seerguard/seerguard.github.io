@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SeerGuard</title>
+    <meta
+      name="description"
+      content="SeerGuard: A Safety Framework for Mobile GUI Agents via World Model Prediction."
+    />
+    <link rel="stylesheet" href="styles.css?v=4" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="paper-header">
+        <h1>
+          <span>SeerGuard: A Safety Framework for Mobile GUI Agents</span>
+          <span>via World Model Prediction</span>
+        </h1>
+        <p class="authors">Anonymous Author(s)</p>
+        <p class="venue">Conference submission under review</p>
+        <nav class="link-bar" aria-label="Project links">
+          <a href="#" aria-disabled="true">
+            <span class="link-icon arxiv-icon" aria-hidden="true">X</span>
+            <span>arXiv</span>
+          </a>
+          <a href="#" aria-disabled="true">
+            <svg class="link-icon" aria-hidden="true" viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                d="M12 2C6.48 2 2 6.58 2 12.22c0 4.52 2.87 8.35 6.84 9.7.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.89-2.78.62-3.37-1.21-3.37-1.21-.46-1.18-1.12-1.49-1.12-1.49-.91-.64.07-.63.07-.63 1.01.07 1.54 1.06 1.54 1.06.9 1.57 2.36 1.12 2.94.86.09-.67.35-1.12.63-1.38-2.22-.26-4.56-1.13-4.56-5.03 0-1.11.39-2.02 1.03-2.73-.1-.26-.45-1.3.1-2.7 0 0 .84-.27 2.75 1.04A9.35 9.35 0 0 1 12 6.95c.85 0 1.7.12 2.5.34 1.91-1.31 2.75-1.04 2.75-1.04.55 1.4.2 2.44.1 2.7.64.71 1.03 1.62 1.03 2.73 0 3.91-2.34 4.77-4.57 5.03.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.59.69.49A10.14 10.14 0 0 0 22 12.22C22 6.58 17.52 2 12 2Z"
+              />
+            </svg>
+            <span>GitHub</span>
+          </a>
+          <a href="#" aria-disabled="true">
+            <span class="link-icon hf-icon" aria-hidden="true">🤗</span>
+            <span>Hugging Face</span>
+          </a>
+          <a href="#" aria-disabled="true">
+            <span class="link-icon modelscope-icon" aria-hidden="true">M</span>
+            <span>ModelScope</span>
+          </a>
+        </nav>
+      </header>
+
+      <section id="abstract" class="section">
+        <h2>Abstract</h2>
+        <p>
+          Mobile graphical user interface (GUI) agents have demonstrated remarkable capabilities
+          in automating complex tasks, yet they introduce critical safety risks where a single
+          erroneous action can lead to irreversible consequences. Existing safety mechanisms are
+          primarily reactive, lacking the ability to assess risks before execution. In this paper,
+          we introduce SeerGuard, a consequence-aware safety framework designed to mitigate these
+          risks through pre-execution instruction-level screening and action-level risk assessment.
+          Specifically, the action-level assessment analyzes agent-proposed actions within current
+          GUI states, anticipating likely outcomes to identify risks before they are executed. To
+          enable these capabilities, we construct a unified safety-augmented world model (SAWM) via
+          multi-task learning, integrating semantic next-state prediction with safety risk
+          assessment. Extensive experiments demonstrate that SeerGuard generalizes effectively
+          across diverse mobile GUI agents. On Qwen3-VL-8B-Instruct, it increases the
+          safety-utility score from 0.191 to 0.596 at omega = 0.8 and reduces the risk-cost score
+          from 0.347 to 0.130 at alpha = 0.8. Further analyses on our SAWM validate the
+          effectiveness of the instruction-level screening, alongside the capability of action risk
+          assessment and next-state prediction.
+        </p>
+        <figure class="figure-compact">
+          <img src="fig/1.png" alt="Effect of SeerGuard on Risk-Cost Score and Safety-Utility Score." />
+          <figcaption>
+            Figure 1: Effect of SeerGuard on the Risk-Cost Score (RCS) and Safety-Utility Score
+            (SUS) of VLM-based GUI agents on MobileSafetyBench. Integrating SeerGuard increases
+            both 1-RCS and SUS and expands radar-area, indicating improved avoidance of harmful
+            execution with minimal usability loss and stronger safety alignment across six task
+            categories.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section id="method" class="section">
+        <h2>Method</h2>
+        <p>To our most acknowledge, related works expose a missing capability: a mobile GUI agent should be able to reason about the consequences of a candidate action before execution. The key question is not only whether an instruction is malicious, but whether a specific action will induce an unsafe future state under the current GUI context. We refer to this requirement as consequence-aware safety. It addresses a failure mode that is not captured by instruction-only screening and cannot be resolved by post-execution verification.</p>
+        <p>To address this problem, we propose a consequence-aware safety framework for mobile GUI agents. SeerGuard consists of two stages: (1) instruction-level screening, which rejects explicitly malicious requests before execution; and (2) action-level risk assessment, which evaluates the risk of actions by predicting their likely consequences before execution. We adopt a world-modeling perspective because pre-execution safety requires anticipating how the interface state will change after an action. Rather than generating future screens at the pixel level, SeerGuard predicts next states using semantic text descriptions. This design is motivated by the observation that safety decisions often depend on functional state changes rather than visual fidelity, making semantic prediction a more practical choice for online verification.</p>
+        <p>To instantiate SeerGuard, we build a unified Safety-Augmented World Model (SAWM) upon Qwen3-VL-8B-Instruct for two coupled tasks: instruction-level screening and action-level risk assessment. Given a screenshot and a candidate action, the model predicts the semantic next state, evaluates its safety, and provides a brief rationale, enabling consequence auditing before execution. Because risky mobile interaction data are scarce, we further introduce a safety augmentation strategy built from general textual safety data, multimodal mobile risk data, and synthetic textual mobile risk data. We train the model via supervised fine-tuning on this unified multi-task corpus, enabling joint learning of malicious instruction filtering and consequence-aware risk assessment.</p>
+        <!-- <p>
+          SeerGuard treats mobile GUI interaction as a sequential decision-making process.
+          Given a user instruction, the GUI agent observes the current screen and proposes a
+          candidate action. Rather than executing the action immediately, SeerGuard audits it
+          in advance by forecasting the likely semantic consequence and evaluating the safety
+          of that predicted future state.
+        </p>
+        <p>
+          The framework operates in two stages. First, instruction-level screening rejects
+          explicitly malicious requests before any device interaction begins. Second,
+          action-level risk assessment evaluates each agent-proposed action in the context of
+          the current GUI state. This second stage is designed for subtle cases where the user
+          request appears benign, but the action may trigger privacy leakage, financial loss,
+          destructive operations, prompt injection, or other safety violations.
+        </p>
+        <p>
+          To support this proactive audit, SeerGuard builds a safety-augmented world model
+          (SAWM) on top of Qwen3-VL-8B-Instruct. Instead of generating future screenshots at
+          the pixel level, SAWM predicts semantic next-state descriptions, safety labels, and
+          concise rationales. This design focuses computation on functional state changes that
+          matter for safety decisions.
+        </p> -->
+        <figure >
+          <img src="fig/2.png" alt="Overview of SeerGuard." />
+          <figcaption>
+            Figure 2: Overview of SeerGuard: A dual-stage, consequence-aware safety framework that
+            combines instruction-level screening and world-model-based action risk assessment, which
+            can secure mobile GUI agents by defending against explicit malicious intention and
+            unsafe actions before execution.
+          </figcaption>
+        </figure>
+      <p>To implement the SeerGuard framework, we construct a unified safety-augmented world model, integrating semantic next-state prediction with safety risk assessment. We refer to the prior work MobileWorldBench to endow the model with fundamental world model capabilities, i.e., state-transition forecasting and action-consequence prediction. However, equipping this world model with robust risk identification capabilities is severely hindered by the scarcity of safety-critical GUI interaction data. To overcome this bottleneck, we propose a novel safety augmentation approach driven by multimodal safety data and multi-task model training.</p>
+     <figure class="figure-case">
+          <img src="fig/6.png" alt="Overview of SeerGuard." />
+          <figcaption>
+            Figure 3: Representative examples from the MobileWorld training data. Left: Given the current screen and a candidate UI action, the model predicts the next UI state, assesses potential risks, and outputs a safety label. Right: The model answers structural and visual questions about the next UI state. The ground-truth "Future Screen" is included for visualization only and is hidden from the model during inference.
+          </figcaption>
+        </figure>
+
+
+
+
+      <p>Our contributions are summarized as follows: (1) We introduce SeerGuard, a consequence-aware safety framework for mobile GUI agents that integrates coarse-grained instruction-level screening with fine-grained action-level risk assessment. It can directly reject malicious instructions and proactively prevent risky actions by predicting their likely consequences;(2) We design a safety-augmented world model (SAWM) that predicts semantic next states directly from multimodal GUI contexts, enabling efficient pre-execution auditing of action consequences without computationally expensive pixel-level prediction;(3) Extensive experiments demonstrate that SeerGuard consistently improves the safety-utility trade-off across diverse mobile GUI agents.  Further analyses confirm the effectiveness of SAWM for both instruction-level screening and action-level risk assessment.</p>
+      </section>
+      <section id="evaluation" class="section">
+        <h2>Evaluation</h2>
+        <p>
+          The evaluation measures whether SeerGuard improves protection without simply
+          refusing everything. The framework is tested on MobileSafetyBench, which contains
+          both high-risk and low-risk mobile GUI tasks across settings such as messaging, web
+          navigation, social media, calendar settings, and financial transactions.
+        </p>
+        <p>
+          Two aggregate metrics are used. Safety-Utility Score (SUS) rewards safe behavior
+          while preserving benign task completion, whereas Risk-Cost Score (RCS) assigns a
+          larger penalty to harmful execution than to unnecessary refusal. Together, these
+          metrics expose the tradeoff between risk avoidance and usable automation.
+        </p>
+        <figure>
+          <img
+            src="fig/3.png"
+            alt="Task completion rate and task refusal rate across different mobile GUI agents."
+          />
+          <figcaption>
+            Figure 4: The task completion rate (left) and task refusal rate (right) of different
+            mobile GUI agents on MobileSafetyBench. The tradeoff between task completion and task
+            refusal is evident, with different agents exhibiting varying performances. GPT-5.1 and
+            Gemini-3.1 achieve higher LC but higher HC coupled with insufficient HR, which can lead
+            to safety concerns. With SeerGuard, these agents show a significant decrease in HC and
+            increase in HR, with relatively less loss in LC and LR.
+          </figcaption>
+        </figure>
+        <p>
+          Figure 4 breaks the aggregate behavior into task completion and task refusal rates
+          for low-risk and high-risk tasks. After adding SeerGuard, the guarded agents
+          generally reduce harmful completion on high-risk tasks and increase appropriate
+          refusal, while retaining competitive completion rates on low-risk tasks. The
+          ablation results further show that both instruction-level screening and action-level
+          assessment contribute to the final safety gains.
+        </p>
+
+        <div class="table-block">
+          <h3>Table 1: Results of SeerGuard framework evaluation on MobileSafetyBench.</h3>
+          <p>
+            Table 1 reports the overall safety-utility tradeoff when SeerGuard is attached to
+            different GUI agents. Across GPT-5.1, Gemini-3.1, and Qwen3-VL, adding SeerGuard
+            consistently lowers risk-cost scores, indicating fewer harmful executions. The
+            strongest risk control appears on Qwen3-VL + SeerGuard, which reaches the lowest
+            RCS across all alpha settings. The ablation rows further show that instruction
+            screening and action-level assessment are both useful, while the full dual-stage
+            system provides the best overall risk reduction.
+          </p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th rowspan="2">Mode</th>
+                  <th rowspan="2">Model</th>
+                  <th colspan="4">Risk-Cost Score ↓</th>
+                  <th colspan="4">Safety-Utility Score ↑</th>
+                </tr>
+                <tr>
+                  <th>alpha = 0.8</th>
+                  <th>alpha = 0.7</th>
+                  <th>alpha = 0.6</th>
+                  <th>alpha = 0.5</th>
+                  <th>omega = 0.8</th>
+                  <th>omega = 0.7</th>
+                  <th>omega = 0.6</th>
+                  <th>omega = 0.5</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td rowspan="3">Direct</td>
+                  <td>GPT-5.1</td>
+                  <td>0.301</td>
+                  <td>0.264</td>
+                  <td>0.228</td>
+                  <td>0.192</td>
+                  <td>0.573</td>
+                  <td>0.617</td>
+                  <td>0.660</td>
+                  <td>0.703</td>
+                </tr>
+                <tr>
+                  <td>Gemini-3.1</td>
+                  <td>0.368</td>
+                  <td>0.322</td>
+                  <td>0.276</td>
+                  <td>0.230</td>
+                  <td>0.581</td>
+                  <td>0.624</td>
+                  <td>0.668</td>
+                  <td>0.712</td>
+                </tr>
+                <tr>
+                  <td>Qwen3-VL</td>
+                  <td>0.347</td>
+                  <td>0.303</td>
+                  <td>0.260</td>
+                  <td>0.217</td>
+                  <td>0.191</td>
+                  <td>0.219</td>
+                  <td>0.248</td>
+                  <td>0.277</td>
+                </tr>
+                <tr>
+                  <td rowspan="4">Guard</td>
+                  <td>GPT-5.1 + SeerGuard</td>
+                  <td>0.145</td>
+                  <td>0.155</td>
+                  <td>0.164</td>
+                  <td>0.173</td>
+                  <td>0.679</td>
+                  <td>0.676</td>
+                  <td>0.672</td>
+                  <td>0.668</td>
+                </tr>
+                <tr>
+                  <td>Gemini-3.1 + SeerGuard</td>
+                  <td>0.180</td>
+                  <td>0.190</td>
+                  <td>0.200</td>
+                  <td>0.210</td>
+                  <td><strong>0.773</strong></td>
+                  <td><strong>0.762</strong></td>
+                  <td><strong>0.752</strong></td>
+                  <td><strong>0.742</strong></td>
+                </tr>
+                <tr>
+                  <td>Qwen3-VL + SCoT</td>
+                  <td>0.368</td>
+                  <td>0.322</td>
+                  <td>0.276</td>
+                  <td>0.230</td>
+                  <td>0.219</td>
+                  <td>0.236</td>
+                  <td>0.252</td>
+                  <td>0.268</td>
+                </tr>
+                <tr>
+                  <td>Qwen3-VL + SeerGuard</td>
+                  <td><strong>0.130</strong></td>
+                  <td><strong>0.135</strong></td>
+                  <td><strong>0.140</strong></td>
+                  <td><strong>0.145</strong></td>
+                  <td>0.596</td>
+                  <td>0.564</td>
+                  <td>0.532</td>
+                  <td>0.500</td>
+                </tr>
+                <tr>
+                  <td rowspan="3">Ablation</td>
+                  <td>Qwen3-VL + SeerGuard<sub>inst</sub></td>
+                  <td>0.310</td>
+                  <td>0.275</td>
+                  <td>0.240</td>
+                  <td>0.205</td>
+                  <td>0.248</td>
+                  <td>0.268</td>
+                  <td>0.288</td>
+                  <td>0.309</td>
+                </tr>
+                <tr>
+                  <td>Qwen3-VL + SeerGuard<sub>act</sub></td>
+                  <td>0.141</td>
+                  <td>0.144</td>
+                  <td>0.148</td>
+                  <td>0.152</td>
+                  <td>0.503</td>
+                  <td>0.467</td>
+                  <td>0.432</td>
+                  <td>0.397</td>
+                </tr>
+                <tr>
+                  <td>Qwen3-VL + SeerGuard<sub>Qwen</sub></td>
+                  <td>0.170</td>
+                  <td>0.185</td>
+                  <td>0.200</td>
+                  <td>0.215</td>
+                  <td>0.554</td>
+                  <td>0.521</td>
+                  <td>0.488</td>
+                  <td>0.455</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="table-block">
+          <h3>Table 2: Results of instruction-level screening evaluation.</h3>
+          <p>
+            Table 2 isolates the instruction-level screening ability of SAWM. On
+            Agent-SafetyBench, which contains only unsafe samples, SAWM achieves the highest
+            recall among the compared methods and a competitive F1 score. On the mixed Prompt
+            Injection benchmark, SAWM obtains the best F1 score, suggesting that it can detect
+            malicious instructions while avoiding excessive false alarms.
+          </p>
+          <div class="table-wrap narrow-table">
+            <table>
+              <thead>
+                <tr>
+                  <th rowspan="2">Model</th>
+                  <th colspan="3">Agent-SafetyBench</th>
+                  <th colspan="3">Prompt Injection</th>
+                </tr>
+                <tr>
+                  <th>P</th>
+                  <th>R</th>
+                  <th>F1</th>
+                  <th>P</th>
+                  <th>R</th>
+                  <th>F1</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>NemoGuard</td><td>-</td><td>0.280</td><td>0.437</td><td>0.936</td><td>0.772</td><td>0.846</td></tr>
+                <tr><td>WildGuard</td><td>-</td><td>0.372</td><td>0.542</td><td>0.901</td><td>0.867</td><td>0.884</td></tr>
+                <tr><td>PolyGuard</td><td>-</td><td>0.406</td><td><strong>0.578</strong></td><td>0.943</td><td>0.893</td><td>0.917</td></tr>
+                <tr><td>LlamaGuard3</td><td>-</td><td>0.250</td><td>0.400</td><td>0.957</td><td>0.658</td><td>0.780</td></tr>
+                <tr><td>Qwen3Guard-strict</td><td>-</td><td>0.195</td><td>0.326</td><td><strong>0.997</strong></td><td>0.746</td><td>0.853</td></tr>
+                <tr><td>Qwen3Guard-loose</td><td>-</td><td>0.320</td><td>0.485</td><td>0.964</td><td><strong>0.881</strong></td><td>0.921</td></tr>
+                <tr><td>Qwen3-VL</td><td>-</td><td>0.375</td><td>0.545</td><td>0.987</td><td>0.858</td><td>0.918</td></tr>
+                <tr><td>SAWM</td><td>-</td><td><strong>0.396</strong></td><td>0.567</td><td>0.984</td><td>0.867</td><td><strong>0.922</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="table-block">
+          <h3>Table 3: Results of action-level risk assessment on MobileRisk.</h3>
+          <p>
+            Table 3 evaluates whether the model can identify unsafe actions during mobile GUI
+            trajectories. SAWM achieves the best accuracy, F1 score, and step score, showing a
+            stronger balance between detecting real risks and avoiding over-refusal. The step
+            score improvement is especially important because it reflects whether the model can
+            locate the first unsafe action close to the true risk onset.
+          </p>
+          <div class="table-wrap narrow-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Model</th>
+                  <th>Acc</th>
+                  <th>P</th>
+                  <th>R</th>
+                  <th>F1</th>
+                  <th>Step Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Rule-based</td><td>0.578</td><td>0.580</td><td>0.569</td><td>0.574</td><td>0.198</td></tr>
+                <tr><td>GPT-5.1</td><td>0.676</td><td><strong>0.714</strong></td><td>0.588</td><td>0.645</td><td>0.341</td></tr>
+                <tr><td>Qwen3-VL</td><td>0.681</td><td>0.699</td><td>0.637</td><td>0.667</td><td>0.312</td></tr>
+                <tr><td>MobileWorld</td><td>0.652</td><td>0.712</td><td>0.510</td><td>0.594</td><td>0.269</td></tr>
+                <tr><td>OS-Sentinel</td><td>0.642</td><td>0.606</td><td><strong>0.814</strong></td><td>0.695</td><td>0.269</td></tr>
+                <tr><td>SAWM</td><td><strong>0.696</strong></td><td>0.664</td><td>0.794</td><td><strong>0.723</strong></td><td><strong>0.361</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- <div class="table-block">
+          <h3>Table 4: Results of prediction evaluation on Next-State-QA.</h3>
+          <p>
+            Table 4 measures semantic next-state prediction accuracy. SAWM outperforms GPT-5.1,
+            MobileWorld, Qwen3-VL, and larger open-source VLM baselines, narrowing the gap to
+            human performance. This supports the core design choice of using predicted future
+            GUI states as grounding for proactive safety assessment.
+          </p>
+          <div class="bar-chart" aria-label="Next-State-QA accuracy by model">
+            <div class="chart-inner">
+              <div class="bar baseline" style="--value: 92.4">
+                <span class="bar-value">0.832</span>
+                <i><span class="model-badge">H</span></i>
+                <span class="bar-label">Human</span>
+              </div>
+              <div class="bar" style="--value: 80.8">
+                <span class="bar-value">0.727</span>
+                <i><span class="model-badge openai">◎</span></i>
+                <span class="bar-label">GPT-5.1</span>
+              </div>
+              <div class="bar" style="--value: 67.8">
+                <span class="bar-value">0.610</span>
+                <i><span class="model-badge">IV</span></i>
+                <span class="bar-label">Intern-VL3-78B</span>
+              </div>
+              <div class="bar" style="--value: 72.3">
+                <span class="bar-value">0.651</span>
+                <i><span class="model-badge qwen">Q</span></i>
+                <span class="bar-label">Qwen3-VL-235B</span>
+              </div>
+              <div class="bar" style="--value: 78.0">
+                <span class="bar-value">0.702</span>
+                <i><span class="model-badge qwen">Q</span></i>
+                <span class="bar-label">Qwen3-VL</span>
+              </div>
+              <div class="bar" style="--value: 79.3">
+                <span class="bar-value">0.714</span>
+                <i><span class="model-badge mw">MW</span></i>
+                <span class="bar-label">MobileWorld</span>
+              </div>
+              <div class="bar accent" style="--value: 84.7">
+                <span class="bar-value">0.762</span>
+                <i><span class="model-badge sawm">SG</span></i>
+                <span class="bar-label">SAWM</span>
+              </div>
+            </div>
+            <div class="chart-y-label">Acc</div>
+          </div>
+        </div> -->
+      </section>
+        <figure class="figure-newcompact">
+          <img src="fig/5.png" alt="Effect of SeerGuard on Risk-Cost Score and Safety-Utility Score." />
+          <figcaption>
+            Figure 5: For semantic next-state prediction accuracy, SAWM outperforms GPT-5.1,
+            MobileWorld, Qwen3-VL, and larger open-source VLM baselines, narrowing the gap to
+            human performance. This supports the design of using predicted future
+            GUI states as grounding for  safety assessment.
+          </figcaption>
+        </figure>
+      <section id="case-study" class="section">
+        <h2>Case Study</h2>
+        <p>
+          The case study examines a high-risk visual prompt injection scenario. The user asks
+          the agent to check the latest post on PhotoNote, but the app content contains a
+          hidden malicious instruction that attempts to redirect the agent toward buying 100
+          NVIDIA stocks in a stock-trading app.
+        </p>
+        <p>
+          The baseline Qwen3-VL guard treats the injected content as a legitimate instruction
+          and marks the action to open the stock app as safe. In contrast, SAWM identifies the
+          third-party instruction as a high-risk external injection, predicts that following it
+          could cause unauthorized financial execution, and refuses the unsafe action before
+          it is carried out.
+        </p>
+        <p>
+          We further highlight the benefit of SAWM at the action level. In these cases, the user instruction itself may appear executable, but the concrete interaction trajectory contains risky intermediate actions that should not be taken. SAWM addresses this challenge by forecasting the likely next GUI state and judging whether the proposed action would lead to unsafe outcomes, rather than simply checking whether the local action appears reasonable in isolation. 
+        </p>
+        <figure class="figure-case">
+          <img
+            src="fig/4.png"
+            alt="Comparative case study of visual prompt injection in a mobile GUI task."
+          />
+          <figcaption>
+            Figure 6: A comparative case study of visual prompt injection. Unlike the baseline
+            Qwen3-VL, which blindly complies with the injected malicious instruction to execute an
+            unauthorized financial trade, SAWM successfully intercepts the operation before
+            execution by predicting harmful consequences.
+          </figcaption>
+        </figure>
+        <figure class="figure-case">
+          <img
+            src="fig/7.png"
+            alt="Comparative case study of visual prompt injection in a mobile GUI task."
+          />
+          <figcaption>
+            Figure 7: Action-level risk assessment case study on Web Navigation. Compared with strong GUI agent Gemini-3.1 (Direct), SAWM identifies that the proposed browsing action would lead to an illegal or malicious website and blocks the unsafe navigation before execution.
+          </figcaption>
+        </figure>
+        <figure class="figure-case">
+          <img
+            src="fig/8.png"
+            alt="Comparative case study of visual prompt injection in a mobile GUI task."
+          />
+          <figcaption>
+            Figure 8: Action-level risk assessment case study on SMS. Compared with strong GUI agent GPT-5.1 (Direct), SAWM detects that the proposed action sequence would facilitate unsafe biased content in the SMS workflow and stops the risky operation in advance..
+          </figcaption>
+        </figure>
+      </section>
+    </main>
+  </body>
+</html>
