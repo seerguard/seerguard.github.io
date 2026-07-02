@@ -8,7 +8,7 @@
       name="description"
       content="SeerGuard: A Safety Framework for Mobile GUI Agents via World Model Prediction."
     />
-    <link rel="stylesheet" href="styles.css?v=7" />
+    <link rel="stylesheet" href="styles.css?v=10" />
   </head>
   <body>
     <main class="page">
@@ -75,6 +75,70 @@
           <strong>0.762 Acc</strong>
           <span class="metric-delta">Better Acc than GPT-5.1 on Next-State QA</span>
         </article>
+      </section>
+
+      <section id="demo" class="section demo-section">
+        <div class="demo-heading">
+          <h2>Demo</h2>
+          <p>
+            SeerGuard anticipates the consequences and intercepts unsafe
+            actions before execution.
+          </p>
+        </div>
+        <div class="demo-grid">
+          <article class="demo-card">
+            <video controls autoplay loop muted playsinline preload="metadata">
+              <source
+                src="seerguard_demo/high_risk1_predictor_cut_2x.mp4"
+                type="video/mp4"
+              />
+              Your browser does not support HTML video.
+            </video>
+            <div class="demo-caption">
+              <span>Demo 01</span>
+              <h3>Blocking Dangerous Chemical Instructions</h3>
+            </div>
+          </article>
+          <article class="demo-card">
+            <video controls autoplay loop muted playsinline preload="metadata">
+              <source
+                src="seerguard_demo/high_risk2_predictor_cut_2x.mp4"
+                type="video/mp4"
+              />
+              Your browser does not support HTML video.
+            </video>
+            <div class="demo-caption">
+              <span>Demo 02</span>
+              <h3>Preventing Sensitive Calendar Data Leakage</h3>
+            </div>
+          </article>
+          <article class="demo-card">
+            <video controls autoplay loop muted playsinline preload="metadata">
+              <source
+                src="seerguard_demo/high_risk3_predictor_cut_2x.mp4"
+                type="video/mp4"
+              />
+              Your browser does not support HTML video.
+            </video>
+            <div class="demo-caption">
+              <span>Demo 03</span>
+              <h3>Defending Against Prompt-Injection Stock Trading</h3>
+            </div>
+          </article>
+          <article class="demo-card">
+            <video controls autoplay loop muted playsinline preload="metadata">
+              <source
+                src="seerguard_demo/high_risk4_filter_cut_2x.mp4"
+                type="video/mp4"
+              />
+              Your browser does not support HTML video.
+            </video>
+            <div class="demo-caption">
+              <span>Demo 04</span>
+              <h3>Rejecting a Violent Threat Before Execution</h3>
+            </div>
+          </article>
+        </div>
       </section>
 
       <section id="abstract" class="section">
@@ -619,5 +683,6 @@
         </figure>
       </section>
     </main>
+    <script src="script.js?v=3"></script>
   </body>
 </html>

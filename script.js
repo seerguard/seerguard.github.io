@@ -16,3 +16,17 @@ const setActiveLink = () => {
 
 setActiveLink();
 window.addEventListener("scroll", setActiveLink, { passive: true });
+
+document.querySelectorAll(".demo-card video").forEach((video) => {
+  const enforceDemoSpeed = () => {
+    video.defaultPlaybackRate = 2;
+    video.playbackRate = 2;
+  };
+
+  enforceDemoSpeed();
+  video.addEventListener("loadedmetadata", enforceDemoSpeed);
+  video.addEventListener("play", enforceDemoSpeed);
+  video.play().catch(() => {
+    // Native controls remain available when a browser blocks autoplay.
+  });
+});
